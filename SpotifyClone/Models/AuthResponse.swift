@@ -7,6 +7,7 @@
 
 import Foundation
 
+//json model
 struct AuthResponse: Codable {
     
     let access_token: String
