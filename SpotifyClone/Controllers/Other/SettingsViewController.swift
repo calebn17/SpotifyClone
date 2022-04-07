@@ -21,6 +21,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureModels()
         title = "Settings"
         view.backgroundColor = .systemBackground
         view.addSubview(tableView)
@@ -31,12 +32,14 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     private func configureModels() {
         sections.append(Section(title: "Account", options: [Option(title: "View Your Profile", handler: { [weak self] in
             DispatchQueue.main.async {
+                print("adding View Your Profile section")
                 self?.viewProfile()
             }
         })]))
         
         sections.append(Section(title: "Account", options: [Option(title: "Sign Out", handler: { [weak self] in
             DispatchQueue.main.async {
+                print("adding Sign Out section")
                 self?.signOutTapped()
             }
         })]))
@@ -61,15 +64,18 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
 //MARK: - TableView DataSource Methods
     
     func numberOfSections(in tableView: UITableView) -> Int {
+        print("This is the section count: \(sections.count)")
         return sections.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("This is the row count: \(sections[section].options.count)")
         return sections[section].options.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let model = sections[indexPath.section].options[indexPath.row]
+        print("This is the model: \(model)")
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = model.title
         return cell
@@ -85,6 +91,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let model = sections[section]
+        print(model.title)
         return model.title
     }
     
