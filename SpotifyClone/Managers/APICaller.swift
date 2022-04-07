@@ -21,6 +21,7 @@ final class APICaller {
         case failedToGetData
     }
     
+    //Using Result container to store UserProfile
     public func getCurrentUserProfile(completion: @escaping (Result<UserProfile, Error>) -> Void) {
         
         //Calling the reusable function
@@ -31,13 +32,15 @@ final class APICaller {
                     return
                 }
                 do {
-                    ///use the below line to see what the returned json looks like to create the data model for it
+                    //Use the below line to see what the returned json looks like to create the data model for it
                     //let result = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
                     
                     let result = try JSONDecoder().decode(UserProfile.self, from: data)
+                    //passing the result data as a Success value into the completion handler. Makes it easier to verfiy that API call worked.
                     completion(.success(result))
                 }
                 catch {
+                    //passing the error to the completion handler
                     completion(.failure(error))
                 }
             }

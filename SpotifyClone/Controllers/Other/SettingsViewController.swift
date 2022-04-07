@@ -17,6 +17,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         return tableView
     }()
     
+    //Array of Section objects from the SettingsModels struct
     private var sections = [Section]()
 
     override func viewDidLoad() {
@@ -29,7 +30,9 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.delegate = self
     }
     
+    //Adding data into the sections array
     private func configureModels() {
+        //The handler calls the viewProfile() method and will be called when the cell is tapped
         sections.append(Section(title: "Account", options: [Option(title: "View Your Profile", handler: { [weak self] in
             DispatchQueue.main.async {
                 print("adding View Your Profile section")
@@ -74,6 +77,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //Sets the model here to be the option's title and handler
         let model = sections[indexPath.section].options[indexPath.row]
         print("This is the model: \(model)")
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
@@ -89,12 +93,10 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         model.handler()
     }
     
+    //Sets the Title header for the section
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let model = sections[section]
         print(model.title)
         return model.title
     }
-    
-
-   
 }

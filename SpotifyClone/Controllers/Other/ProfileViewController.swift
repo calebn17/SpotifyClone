@@ -11,6 +11,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     private let tableView: UITableView = {
         let tableView = UITableView()
+        //Want the table view to be hidden until we display data
         tableView.isHidden = true
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         return tableView
@@ -35,9 +36,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     private func fetchProfile() {
+        //Using a completion so we dont have to pass anything into the function
+        //The "result" data is from the API Call
         APICaller.shared.getCurrentUserProfile { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
+                //If getting the result was successful then let result = model and update the UI with it
                 case .success(let model):
                     self?.updateUI(with: model)
                 case .failure(let error):
@@ -50,7 +54,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     private func updateUI(with model: UserProfile){
         tableView.isHidden = false
-        // configure table models
+        //Configure table models
         models.append("Full Name: \(model.display_name)")
         models.append("Email Address: \(model.email)")
         models.append("User ID: \(model.id)")
@@ -58,6 +62,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.reloadData()
     }
     
+    //Creates an error label when the app fails to grab the profile data
     private func failedToGetProfile() {
         let label = UILabel(frame: .zero)
         label.text = "Failed to load profile"
