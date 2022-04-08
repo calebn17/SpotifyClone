@@ -148,13 +148,13 @@ final class AuthManager {
     }
     
     //called to refresh the token
-    public func refreshIfNeeded(completion: @escaping (Bool) -> Void) {
+    public func refreshIfNeeded(completion: ((Bool) -> Void)?) {
         
         //checks if app is not currently refreshing token
         guard !refreshingToken else {return}
         //if token needs to be refresh then let's refresh. If not, then pass it to the completion handler
         guard shouldRefreshToken else {
-            completion(true)
+            completion?(true)
             return
         }
         
@@ -181,7 +181,7 @@ final class AuthManager {
         let basicToken = Constants.clientID + ":" + Constants.clientSecret
         let data = basicToken.data(using: .utf8)
         guard let base64String = data?.base64EncodedString() else {
-            completion(false)
+            completion?(false)
             print("failure to get base64")
             return
             
@@ -192,7 +192,7 @@ final class AuthManager {
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, _, error in
             self?.refreshingToken = false
             guard let data = data, error == nil else {
-                completion(false)
+                completion?(false)
                 return
             }
             do {
@@ -205,10 +205,10 @@ final class AuthManager {
                 self?.onRefreshBlocks.removeAll()
                 //caching the refreshed result
                 self?.cacheToken(result: result)
-                completion(true)
+                completion?(true)
             } catch {
                 print(error.localizedDescription)
-                completion(false)
+                completion?(false)
             }
         }
         task.resume()

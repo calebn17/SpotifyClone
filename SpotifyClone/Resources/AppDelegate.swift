@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //if user is signed in then take them to the "homepage", if not then make them sign in
         if AuthManager.shared.isSignedIn {
+            AuthManager.shared.refreshIfNeeded(completion: nil)
             window.rootViewController = TabBarViewController()
         } else {
             let navVC = UINavigationController(rootViewController: WelcomeViewController())
