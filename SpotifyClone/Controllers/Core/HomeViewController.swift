@@ -9,10 +9,13 @@ import UIKit
 
 class HomeViewController: UIViewController {
     
+    //
     private var collectionView: UICollectionView = UICollectionView(
         frame: .zero,
+        //setting the collection view layout as a compositional layout
         collectionViewLayout: UICollectionViewCompositionalLayout { sectionIndex, _ -> NSCollectionLayoutSection in
-        return HomeViewController.createSectionLayout(index: sectionIndex)}
+        return HomeViewController.createSectionLayout(index: sectionIndex)
+        }
     )
     
     private let spinner: UIActivityIndicatorView = {
@@ -29,6 +32,7 @@ class HomeViewController: UIViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .done, target: self, action: #selector(didTapSettings))
         
+        //Need to add the collection view as a sub view first!
         configureCollectionView()
         view.addSubview(spinner)
         fetchData()
