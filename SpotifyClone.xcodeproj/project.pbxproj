@@ -41,6 +41,7 @@
 		AFFDA192280463B600AC39AA /* NewReleaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFDA191280463B600AC39AA /* NewReleaseCollectionViewCell.swift */; };
 		AFFDA1942804640200AC39AA /* FeaturedPlaylistCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFDA1932804640200AC39AA /* FeaturedPlaylistCollectionViewCell.swift */; };
 		AFFDA1962804643400AC39AA /* RecommendedTrackCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFDA1952804643400AC39AA /* RecommendedTrackCollectionViewCell.swift */; };
+		AFFDA198280468DF00AC39AA /* NewReleasesCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFDA197280468DF00AC39AA /* NewReleasesCellViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +83,7 @@
 		AFFDA191280463B600AC39AA /* NewReleaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewReleaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		AFFDA1932804640200AC39AA /* FeaturedPlaylistCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedPlaylistCollectionViewCell.swift; sourceTree = "<group>"; };
 		AFFDA1952804643400AC39AA /* RecommendedTrackCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendedTrackCollectionViewCell.swift; sourceTree = "<group>"; };
+		AFFDA197280468DF00AC39AA /* NewReleasesCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewReleasesCellViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +203,7 @@
 		AFDFF9B427F4854D00D4ED45 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				AFFDA197280468DF00AC39AA /* NewReleasesCellViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -373,6 +376,7 @@
 				AF1788D727FC75E400A2D2AD /* AuthResponse.swift in Sources */,
 				AF1788CF27F48D0800A2D2AD /* AudioTrack.swift in Sources */,
 				AFDFF9A327F3EF5D00D4ED45 /* HomeViewController.swift in Sources */,
+				AFFDA198280468DF00AC39AA /* NewReleasesCellViewModel.swift in Sources */,
 				AF1788B727F48BBD00A2D2AD /* AuthViewController.swift in Sources */,
 				AFDFF99F27F3EF5D00D4ED45 /* AppDelegate.swift in Sources */,
 				AFFDA1942804640200AC39AA /* FeaturedPlaylistCollectionViewCell.swift in Sources */,
