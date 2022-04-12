@@ -198,7 +198,7 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        //Returns number of elements in the section array (should be 3)
+        //Returns number of elements in the section array (should be 3)yeah
         return sections.count
     }
     
@@ -206,11 +206,13 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
         let type = sections[indexPath.section]
         switch type {
         case .newReleases(viewModels: let viewModels):
+            //Implement guard because we are trying to cast it as a particular CollectionViewCell
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: NewReleaseCollectionViewCell.identifier, for: indexPath) as? NewReleaseCollectionViewCell
+            //Probably won't ever utilize the else statement but just in case
             else { return UICollectionViewCell()}
             let viewModel = viewModels[indexPath.row]
-            cell.backgroundColor = .red
+            cell.configure(with: viewModel)
             return cell
             
         case .featuredPlaylists(viewModels: let viewModels):
