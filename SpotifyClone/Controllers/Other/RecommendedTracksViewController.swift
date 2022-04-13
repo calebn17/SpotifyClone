@@ -1,18 +1,18 @@
 //
-//  PlaylistViewController.swift
+//  RecommendedTracksViewController.swift
 //  SpotifyClone
 //
-//  Created by Caleb Ngai on 3/30/22.
+//  Created by Caleb Ngai on 4/12/22.
 //
 
 import UIKit
 
-class PlaylistViewController: UIViewController {
-
-    private let playlist: Playlist
+class RecommendedTracksViewController: UIViewController {
     
-    init(playlist: Playlist) {
-        self.playlist = playlist
+    private let track: AudioTrack
+    
+    init(track: AudioTrack) {
+        self.track = track
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -22,11 +22,9 @@ class PlaylistViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = playlist.name
+        title = track.name
         view.backgroundColor = .systemBackground
 
     }
-    
 
- 
 }
