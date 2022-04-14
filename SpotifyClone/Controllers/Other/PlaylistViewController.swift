@@ -9,8 +9,11 @@ import UIKit
 
 class PlaylistViewController: UIViewController{
 
+//MARK: - Setup
+    
     private let playlist: Playlist
     
+    //creates a collection view for the playlist screen. Using a compositional layout
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(sectionProvider: { _, _ -> NSCollectionLayoutSection? in
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
@@ -37,19 +40,23 @@ class PlaylistViewController: UIViewController{
         super.init(nibName: nil, bundle: nil)
     }
     
+    //Going to be storing the cell view models here
     private var viewModels = [RecommendedTrackCellViewModel]()
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+//MARK: - View Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         title = playlist.name
         view.backgroundColor = .systemBackground
         
         view.addSubview(collectionView)
+        //Reusing the RecommendedTrackCollectionViewCell here because it fits what we would want on this screen
         collectionView.register(RecommendedTrackCollectionViewCell.self, forCellWithReuseIdentifier: RecommendedTrackCollectionViewCell.identifier)
+        //Registering the collection header
         collectionView.register(PlaylistHeaderCollectionReusableView.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: PlaylistHeaderCollectionReusableView.identifier)
@@ -57,6 +64,30 @@ class PlaylistViewController: UIViewController{
         collectionView.delegate = self
         collectionView.dataSource = self
         
+        fetchData()
+        
+        //Adding a share button in the navigation bar
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didTapShare))
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        collectionView.frame = view.bounds
+    }
+    
+
+//MARK: - Action Methods
+    
+    @objc private func didTapShare() {
+        //added key "spotify" because external_urls is a dictionary and we want to just grap the value (the actual url)
+        guard let url = URL(string: playlist.external_urls["spotify"] ?? "") else {return}
+        let vc = UIActivityViewController(activityItems: [url], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
+    }
+    
+    
+    private func fetchData() {
         APICaller.shared.getPlaylistDetails(for: playlist) {[weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -74,24 +105,10 @@ class PlaylistViewController: UIViewController{
                 }
             }
         }
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didTapShare))
-    }
-    
-    @objc private func didTapShare() {
-        //added key "spotify" because external_urls is a dictionary and we want to just grap the value (the actual url)
-        guard let url = URL(string: playlist.external_urls["spotify"] ?? "") else {return}
-        print(playlist.external_urls)
-        let vc = UIActivityViewController(activityItems: [url], applicationActivities: [])
-        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
-        present(vc, animated: true)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        collectionView.frame = view.bounds
     }
 }
+
+//MARK: - Collection View Delegate and Datasource methods
 
 extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -99,6 +116,7 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        //Each element in the viewModels array is a track that will be displayed
         return viewModels.count
     }
     
@@ -106,16 +124,22 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecommendedTrackCollectionViewCell.identifier, for: indexPath) as? RecommendedTrackCollectionViewCell
         else { return UICollectionViewCell() }
         
+        //Using the configure method in RecommendedTrackCollectionViewCell to configure the cell with the data found in each element of the viewModels array
         cell.configure(with: viewModels[indexPath.row])
         return cell
     }
     
+    //Adds the Header section
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: PlaylistHeaderCollectionReusableView.identifier, for: indexPath) as? PlaylistHeaderCollectionReusableView, kind == UICollectionView.elementKindSectionHeader else {
             return UICollectionReusableView()
         }
+        
+        //Using the Playlist object that was passed into this VC and parsing it into a PlaylistHeaderViewViewModel so we can configure it
         let headerViewModel = PlaylistHeaderViewViewModel(name: playlist.name, ownerName: playlist.owner.display_name, description: playlist.description, artworkURL: URL(string: playlist.images.first?.url ?? ""))
+        //Using the configure method in PlaylistHeaderCollectionReusableView to configure the header section using hte data from headerViewModel
         header.configure(with: headerViewModel)
+        //Setting the header as the delegate for the PlayAll button
         header.delegate = self
         return header
     }
@@ -127,6 +151,8 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
     }
     
 }
+
+//MARK: - PlaylistHeaderCollectionReusableViewDelegate method
 
 extension PlaylistViewController: PlaylistHeaderCollectionReusableViewDelegate {
     func playlistHeaderCollectionReusableViewDidTapPlayAll(_ header: PlaylistHeaderCollectionReusableView) {

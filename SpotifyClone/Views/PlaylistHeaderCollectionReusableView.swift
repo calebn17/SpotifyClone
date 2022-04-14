@@ -56,7 +56,7 @@ final class PlaylistHeaderCollectionReusableView: UICollectionReusableView {
         return button
     }()
     
-//MARK: - init
+
     
     override init(frame: CGRect) {
         super.init(frame: frame)

@@ -50,6 +50,7 @@
 		AFFDA1A5280704BF00AC39AA /* PlaylistDetailsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFDA1A4280704BE00AC39AA /* PlaylistDetailsResponse.swift */; };
 		AFFDA1A7280851F800AC39AA /* PlaylistHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFDA1A6280851F800AC39AA /* PlaylistHeaderCollectionReusableView.swift */; };
 		AFFDA1A92808585000AC39AA /* PlaylistHeaderViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFDA1A82808585000AC39AA /* PlaylistHeaderViewViewModel.swift */; };
+		AFFDA1AB2808812700AC39AA /* TitleHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFDA1AA2808812700AC39AA /* TitleHeaderCollectionReusableView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -100,6 +101,7 @@
 		AFFDA1A4280704BE00AC39AA /* PlaylistDetailsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDetailsResponse.swift; sourceTree = "<group>"; };
 		AFFDA1A6280851F800AC39AA /* PlaylistHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		AFFDA1A82808585000AC39AA /* PlaylistHeaderViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistHeaderViewViewModel.swift; sourceTree = "<group>"; };
+		AFFDA1AA2808812700AC39AA /* TitleHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +213,7 @@
 				AFFDA1902804637A00AC39AA /* Browse */,
 				AFDFF9A927F3EF5F00D4ED45 /* LaunchScreen.storyboard */,
 				AFFDA1A6280851F800AC39AA /* PlaylistHeaderCollectionReusableView.swift */,
+				AFFDA1AA2808812700AC39AA /* TitleHeaderCollectionReusableView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -411,6 +414,7 @@
 				AFFDA1A5280704BF00AC39AA /* PlaylistDetailsResponse.swift in Sources */,
 				AF1788D727FC75E400A2D2AD /* AuthResponse.swift in Sources */,
 				AF1788CF27F48D0800A2D2AD /* AudioTrack.swift in Sources */,
+				AFFDA1AB2808812700AC39AA /* TitleHeaderCollectionReusableView.swift in Sources */,
 				AFDFF9A327F3EF5D00D4ED45 /* HomeViewController.swift in Sources */,
 				AFFDA198280468DF00AC39AA /* NewReleasesCellViewModel.swift in Sources */,
 				AF1788B727F48BBD00A2D2AD /* AuthViewController.swift in Sources */,
