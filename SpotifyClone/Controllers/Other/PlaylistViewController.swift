@@ -13,7 +13,7 @@ class PlaylistViewController: UIViewController{
     
     private let playlist: Playlist
     
-    //creates a collection view for the playlist screen. Using a compositional layout
+    //Creates a collection view for the playlist screen. Using a compositional layout
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(sectionProvider: { _, _ -> NSCollectionLayoutSection? in
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
@@ -92,7 +92,7 @@ class PlaylistViewController: UIViewController{
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
-                    //RecommendedTrackCellViewModel
+                    //Taking the model(PlaylistDetailsResponse) and mapping it to the viewModels array ([RecommendedTrackCellViewModel]) so we can use it in this controller
                     self?.viewModels = model.tracks.items.compactMap({
                         RecommendedTrackCellViewModel(name: $0.track.name,
                                                       artistName: $0.track.artists.first?.name ?? "-",

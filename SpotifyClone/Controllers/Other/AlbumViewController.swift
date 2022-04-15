@@ -53,7 +53,8 @@ class AlbumViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         view.addSubview(collectionView)
-        //Reusing the RecommendedTrackCollectionViewCell here because it fits what we would want on this screen
+        //Created the AlbumTrackCollectionViewCell to configure how the track cells in Albums would look
+        //AlbumTrackCollectionViewCell is the same as RecommendedTrackCollectionViewCell but without the artwork
         collectionView.register(AlbumTrackCollectionViewCell.self, forCellWithReuseIdentifier: AlbumTrackCollectionViewCell.identifier)
         //Registering the collection header
         collectionView.register(PlaylistHeaderCollectionReusableView.self,
@@ -78,7 +79,7 @@ class AlbumViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
-                    //RecommendedTrackCellViewModel
+                    //Taking the model(AlbumDetailsResponse) and mapping it to the AlbumCollectionViewCellViewModel so we can use it in this controller
                     self?.viewModels = model.tracks.items.compactMap({
                         AlbumCollectionViewCellViewModel(name: $0.name,
                                                       artistName: $0.artists.first?.name ?? "-")
@@ -115,19 +116,22 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
     
     //Adds the Header section
+    //Reusing the PlaylistHeaderCollectionReusableView because it also fits this situation
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: PlaylistHeaderCollectionReusableView.identifier, for: indexPath) as? PlaylistHeaderCollectionReusableView, kind == UICollectionView.elementKindSectionHeader else {
             return UICollectionReusableView()
         }
         
-        //Using the Playlist object that was passed into this VC and parsing it into a PlaylistHeaderViewViewModel so we can configure it
+        //Using the Album object that was passed into this VC and mapping it into a PlaylistHeaderViewViewModel so we can configure it
         let headerViewModel = PlaylistHeaderViewViewModel(
             name: album.name,
             ownerName: album.artists.first?.name,
-            description: "Release Date: \(String.formattedDate(string: album.release_date))",
+            description: "Release Date: \(String.formattedDate(string: album.release_date))", //Created date format extensions
             artworkURL: URL(string: album.images.first?.url ?? ""))
-        //Using the configure method in PlaylistHeaderCollectionReusableView to configure the header section using hte data from headerViewModel
+        
+        //Using the configure method in PlaylistHeaderCollectionReusableView to configure the header section using the data from headerViewModel
         header.configure(with: headerViewModel)
+        
         //Setting the header as the delegate for the PlayAll button
         header.delegate = self
         return header
@@ -143,6 +147,7 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
 
 //MARK: - PlaylistHeaderCollectionReusableViewDelegate method
 
+//Reusing the PlaylistHeaderCollectionReusableViewDelegate
 extension AlbumViewController: PlaylistHeaderCollectionReusableViewDelegate {
     func playlistHeaderCollectionReusableViewDidTapPlayAll(_ header: PlaylistHeaderCollectionReusableView) {
         //Start playlist play in queue
