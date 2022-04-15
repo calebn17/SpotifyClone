@@ -37,7 +37,7 @@ class AlbumViewController: UIViewController {
         return section
     }))
     
-    
+    //Need init to be able to pass an album in
     init(album: Album) {
         self.album = album
         super.init(nibName: nil, bundle: nil)

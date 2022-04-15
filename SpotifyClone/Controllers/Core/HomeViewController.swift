@@ -50,7 +50,8 @@ class HomeViewController: UIViewController {
         return spinner
     }()
     
-    //Stores the different cell view models of each browsing section type (defined in the enum above
+    //Stores the different cell view models of each browsing section type (defined in the enum above)
+    //Will only have 3 elements
     private var sections = [BrowseSectionType]()
 
 //MARK: - View Load Methods
@@ -156,6 +157,7 @@ class HomeViewController: UIViewController {
             case .failure(let error): print(error.localizedDescription)
             }
         }
+        
         //Once all the API calls are made, push this thread to Main
         //Unwrap all the properties of the Jsons
         group.notify(queue: .main) {
