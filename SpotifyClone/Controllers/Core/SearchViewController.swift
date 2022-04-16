@@ -42,6 +42,7 @@ class SearchViewController: UIViewController, UISearchResultsUpdating {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .systemBackground
+        fetchData()
     }
     
     override func viewDidLayoutSubviews() {
@@ -57,7 +58,7 @@ class SearchViewController: UIViewController, UISearchResultsUpdating {
                     self?.categories = model.categories.items
                     self?.collectionView.reloadData()
                 case .failure(let error):
-                    break
+                    print(error.localizedDescription)
                 }
             }
         }
@@ -95,7 +96,16 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         else {return UICollectionViewCell()}
         
         let category = categories[indexPath.row]
-        cell.configure(with: category.name)
+        cell.configure(with: CategoryCollectionViewCellViewModel(title: category.name, artworkURL: URL(string: category.icons.first?.url ?? "")))
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        let category = categories[indexPath.row]
+        let vc = CategoryViewController(category: category)
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+        
     }
 }
