@@ -26,12 +26,12 @@ class CategoryViewController: UIViewController {
         
         let section = NSCollectionLayoutSection(group: group)
         
-        //Adding a header for this collectionview/screen
-        section.boundarySupplementaryItems = [
-            NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1)),
-                                                        elementKind: UICollectionView.elementKindSectionHeader,
-                                                        alignment: .top
-                                                       )]
+//        //Adding a header for this collectionview/screen
+//        section.boundarySupplementaryItems = [
+//            NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1)),
+//                                                        elementKind: UICollectionView.elementKindSectionHeader,
+//                                                        alignment: .top
+//                                                       )]
         return section
     }))
     
