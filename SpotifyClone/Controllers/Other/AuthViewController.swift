@@ -58,7 +58,6 @@ class AuthViewController: UIViewController, WKNavigationDelegate {
         //hides the webview after we grab the code
         webView.isHidden = true
         
-        print("Code: \(code)")
         //exchanges the code for a token and then shows the root vc which is the TabBarViewController
         //also completion handler is now -> true
         AuthManager.shared.exchangeCodeForToken(code: code) { [weak self] success in

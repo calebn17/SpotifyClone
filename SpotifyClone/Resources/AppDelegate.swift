@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = window
         
         AuthManager.shared.refreshIfNeeded { success in
-            print(success)
+            //print(success)
         }
         //print(AuthManager.shared.signInURL?.absoluteString)
         

@@ -35,14 +35,12 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         //The handler calls the viewProfile() method and will be called when the cell is tapped
         sections.append(Section(title: "Account", options: [Option(title: "View Your Profile", handler: { [weak self] in
             DispatchQueue.main.async {
-                print("adding View Your Profile section")
                 self?.viewProfile()
             }
         })]))
         
         sections.append(Section(title: "Account", options: [Option(title: "Sign Out", handler: { [weak self] in
             DispatchQueue.main.async {
-                print("adding Sign Out section")
                 self?.signOutTapped()
             }
         })]))
@@ -67,19 +65,16 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
 //MARK: - TableView DataSource Methods
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        print("This is the section count: \(sections.count)")
         return sections.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("This is the row count: \(sections[section].options.count)")
         return sections[section].options.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //Sets the model here to be the option's title and handler
         let model = sections[indexPath.section].options[indexPath.row]
-        print("This is the model: \(model)")
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = model.title
         return cell
@@ -96,7 +91,6 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     //Sets the Title header for the section
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let model = sections[section]
-        print(model.title)
         return model.title
     }
 }

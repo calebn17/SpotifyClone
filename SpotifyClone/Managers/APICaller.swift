@@ -26,7 +26,6 @@ final class APICaller {
     public func getAlbumDetails(for album: Album, completion: @escaping (Result<AlbumDetailsResponse, Error>) -> Void) {
         createRequest(with: URL(string: Constants.baseAPIURL + "/albums/" + album.id), type: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
-                print("request url: \(request)")
                 guard let data = data, error == nil else {
                     completion(.failure(APIError.failedToGetData))
                     return
@@ -35,7 +34,7 @@ final class APICaller {
                     let result = try JSONDecoder().decode(AlbumDetailsResponse.self, from: data)
                     //passing the result data as a Success value into the completion handler. Makes it easier to verfiy that API call worked.
                     completion(.success(result))
-                    print(result)
+                    
                 }
                 catch {
                     //passing the error to the completion handler
@@ -52,7 +51,6 @@ final class APICaller {
     public func getPlaylistDetails(for playlist: Playlist, completion: @escaping (Result<PlaylistDetailsResponse, Error>) -> Void) {
         createRequest(with: URL(string: Constants.baseAPIURL + "/playlists/" + playlist.id), type: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
-                print("request url: \(request)")
                 guard let data = data, error == nil else {
                     completion(.failure(APIError.failedToGetData))
                     return
@@ -152,7 +150,6 @@ final class APICaller {
                 }
                 do {
                     let result = try JSONDecoder().decode(RecommendationsResponse.self, from: data)
-                    print("Recommendations: \(result)")
                     completion(.success(result))
                 }
                 catch {
@@ -172,7 +169,6 @@ final class APICaller {
                 }
                 do {
                     let result = try JSONDecoder().decode(RecommendedGenresResponse.self, from: data)
-                    //print("Recommended Genres: \(result)")
                     completion(.success(result))
                 }
                 catch {
@@ -194,7 +190,6 @@ final class APICaller {
                 }
                 do {
                     let result = try JSONDecoder().decode(AllCategoriesResponse.self, from: data)
-                    print(result)
                     completion(.success(result))
                 }
                 catch {
@@ -223,6 +218,38 @@ final class APICaller {
             task.resume()
         }
     }
+    
+//MARK: - Search
+    
+    public func search(with query: String, completion: @escaping (Result<[SearchResult], Error>) -> Void) {
+        createRequest(with: URL(string: Constants.baseAPIURL + "/search?limit=10&type=album,artist,playlist,track&q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"), type: .GET) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                do {
+                    let result = try JSONDecoder().decode(SearchResultsResponse.self, from: data)
+                    
+                    //Storing the parsed results in this array of SearchResult
+                    var searchResults: [SearchResult] = []
+                    //Taking the non nil elements of each type and putting it into each case of the SearchResult enum
+                    searchResults.append(contentsOf: result.tracks.items.compactMap({.track(model: $0)}))
+                    searchResults.append(contentsOf: result.albums.items.compactMap({.album(model: $0)}))
+                    searchResults.append(contentsOf: result.artists.items.compactMap({.artist(model: $0)}))
+                    searchResults.append(contentsOf: result.playlists.items.compactMap({.playlist(model: $0)}))
+                   
+                    completion(.success(searchResults))
+                }
+                catch {
+                    print(error.localizedDescription)
+                    completion(.failure(error))
+                }
+            }
+            task.resume()
+        }
+    }
+    
 //MARK: - Private Methods
     
     enum HTTPMethod: String {

@@ -198,7 +198,6 @@ final class AuthManager {
             do {
                 //decoding it with the AuthResponse data model
                 let result = try JSONDecoder().decode(AuthResponse.self, from: data)
-                print("Successfully refreshed token")
                 
                 //passing the new access token to the saved completion block
                 self?.onRefreshBlocks.forEach { $0(result.access_token) }
