@@ -17,6 +17,7 @@ class CategoryViewController: UIViewController {
         
         item.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)
         
+        //there will be two columns of cells
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(250)),
             subitem: item,
@@ -67,6 +68,7 @@ class CategoryViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result{
                 case .success(let model):
+                    //getting the playlists from the API
                     self?.playlists = model.playlists.items
                     self?.collectionView.reloadData()
                 case .failure(let error):
@@ -84,10 +86,12 @@ extension CategoryViewController: UICollectionViewDelegate, UICollectionViewData
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        //reusing the FeaturedPlaylistCollectionViewCell class here
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeaturedPlaylistCollectionViewCell.identifier, for: indexPath) as? FeaturedPlaylistCollectionViewCell
         else { return UICollectionViewCell()}
         
         let playlist = playlists[indexPath.row]
+        //passing the playlist data as a FeaturedPlaylistCellViewModel into the FeaturedPlaylistCollectionViewCell so it can display that data
         cell.configure(with: FeaturedPlaylistCellViewModel(name: playlist.name, artworkURL: URL(string: playlist.images.first?.url ?? ""), creator: playlist.owner.display_name))
         return cell
     }

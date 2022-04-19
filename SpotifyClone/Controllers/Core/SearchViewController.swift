@@ -8,9 +8,8 @@
 import UIKit
 
 class SearchViewController: UIViewController, UISearchResultsUpdating, UISearchBarDelegate {
-    
-    
-    
+
+//MARK: - Setup
     let searchController: UISearchController = {
         let vc = UISearchController(searchResultsController: SearchResultsViewController())
         vc.searchBar.placeholder = "Songs, Artists, Albums"
@@ -30,19 +29,27 @@ class SearchViewController: UIViewController, UISearchResultsUpdating, UISearchB
         return NSCollectionLayoutSection(group: group)
     }))
     
+    //Storing array of Category(s) here
     private var categories = [Category]()
 
+//MARK: - View Load Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        
+        //Adding a search controller onto the SearchViewController
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         navigationItem.searchController = searchController
+        
+        //Adding the collectionView onto the SearchViewController
         view.addSubview(collectionView)
         collectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .systemBackground
+        
         fetchCategoryData()
     }
     
@@ -50,13 +57,17 @@ class SearchViewController: UIViewController, UISearchResultsUpdating, UISearchB
         super.viewDidLayoutSubviews()
         collectionView.frame = view.bounds
     }
+
+//MARK: - Action Methods
     
     func fetchCategoryData() {
         APICaller.shared.getCategories { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
+                    //fetching the data, put it into a AllCategoriesResponse model and placing it into the categories array
                     self?.categories = model.categories.items
+                    //need to reloadData to refresh collectionView
                     self?.collectionView.reloadData()
                 case .failure(let error):
                     print(error.localizedDescription)
@@ -66,19 +77,23 @@ class SearchViewController: UIViewController, UISearchResultsUpdating, UISearchB
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        //Making sure there is text, and that the input isn't just empty white spaces
+        //Setting the searchResultsController (built-in) as our custom SearchResultsViewController
         guard let resultsController = searchController.searchResultsController as? SearchResultsViewController,
-            let query = searchBar.text,
+              //Making sure there is text, and that the input isn't just empty white spaces
+                let query = searchBar.text,
                 !query.trimmingCharacters(in: .whitespaces).isEmpty else {
             return
         }
         
+        //Using a delegate to push the search results view onto the SearchViewController
         resultsController.delegate = self
         
+        //Fetching the Search Results data
         APICaller.shared.search(with: query) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let results):
+                    //updating the resultsController(SearchResultsViewController) with the data
                     resultsController.update(with: results)
                 case .failure(let error):
                     print(error.localizedDescription)
@@ -89,14 +104,15 @@ class SearchViewController: UIViewController, UISearchResultsUpdating, UISearchB
     
     //Actively update each character that is typed
     func updateSearchResults(for searchController: UISearchController) {
-        
-        
     }
 
 
 }
 
-extension SearchViewController: SearchResultsViewcontrollerDelegate {
+//MARK: - SearchResultsViewControllerDelegate Method
+extension SearchViewController: SearchResultsViewControllerDelegate {
+    //Function that is called by the SearchResultsViewController whenever the user taps on a search result, and the function pushes the corresponding result's view controller
+    //from this SearchViewController
     func didTapResult(_ result: SearchResult) {
         switch result {
         case .artist(let model):
@@ -115,6 +131,7 @@ extension SearchViewController: SearchResultsViewcontrollerDelegate {
     }
 }
 
+//MARK: - Collection View Methods
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {

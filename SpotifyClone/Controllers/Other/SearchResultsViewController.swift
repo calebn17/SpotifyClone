@@ -7,18 +7,21 @@
 
 import UIKit
 
+//MARK: - Setup
+
+//Created the data model so that we can attach a title to each SearchResult
 struct SearchSection {
     let title: String
     let results: [SearchResult]
 }
 
-protocol SearchResultsViewcontrollerDelegate: AnyObject {
+protocol SearchResultsViewControllerDelegate: AnyObject {
     func didTapResult(_ result: SearchResult)
 }
 
 class SearchResultsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    weak var delegate: SearchResultsViewcontrollerDelegate?
+    weak var delegate: SearchResultsViewControllerDelegate?
     private var sections: [SearchSection] = []
     
     private let tableView: UITableView = {
@@ -28,6 +31,7 @@ class SearchResultsViewController: UIViewController, UITableViewDelegate, UITabl
         return tableView
     }()
 
+//MARK: - View Load Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
@@ -41,8 +45,12 @@ class SearchResultsViewController: UIViewController, UITableViewDelegate, UITabl
         super.viewDidLayoutSubviews()
         tableView.frame = view.bounds
     }
+
+//MARK: - Action Methods
     
     func update(with results: [SearchResult]) {
+        //will filter results for the particular case (.artists) and will return "true" if it's there and will also throw an array of the elements that match the case
+        //ex. will return an array of artists
         let artists = results.filter({
             switch $0 {
             case .artist: return true
@@ -67,6 +75,7 @@ class SearchResultsViewController: UIViewController, UITableViewDelegate, UITabl
             default: return false
             }
         })
+        //taking the different arrays that match the cases and putting them in the sections array as such
         self.sections = [
             SearchSection(title: "Songs", results: tracks),
             SearchSection(title: "Artists", results: artists),
@@ -74,22 +83,29 @@ class SearchResultsViewController: UIViewController, UITableViewDelegate, UITabl
             SearchSection(title: "Albums", results: albums),
         ]
         tableView.reloadData()
+        //if there ARE results then the tableView is NOT hidden
         tableView.isHidden = results.isEmpty
     }
   
+//MARK: - TableView Methods
+    
     func numberOfSections(in tableView: UITableView) -> Int {
+        //the sections in this case would be if there are songs, artists, playlists, and albums (if there are any)
         return sections.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        //returns the number of elements in the array. so for the song section, it would return the number of tracks that are in that array
         return sections[section].results.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //going through each section and the items (ex tracks) in each section
         let result = sections[indexPath.section].results[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
         switch result {
         case .artist(let model):
+            //Ex. if the result at this position is an artists then it sets the cell text label to be the name of that Artist
             cell.textLabel?.text = model.name
         case .album(let model):
             cell.textLabel?.text = model.name
@@ -108,6 +124,7 @@ class SearchResultsViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        //Whichever cell the user taps on, pass that cells info to the delegate (which is the SearchViewController to push a new view controller)
         let result = sections[indexPath.section].results[indexPath.row]
         delegate?.didTapResult(result)
         
