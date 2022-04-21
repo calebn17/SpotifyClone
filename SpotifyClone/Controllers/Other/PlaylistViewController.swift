@@ -42,6 +42,8 @@ class PlaylistViewController: UIViewController{
     
     //Going to be storing the cell view models here
     private var viewModels = [RecommendedTrackCellViewModel]()
+    //Storing the indiviual tracks in the playlist here
+    private var tracks = [AudioTrack]()
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -92,6 +94,8 @@ class PlaylistViewController: UIViewController{
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
+                    //Pulling out the indiviual audio tracks from the model and putting it in the tracks array
+                    self?.tracks = model.tracks.items.compactMap({$0.track})
                     //Taking the model(PlaylistDetailsResponse) and mapping it to the viewModels array ([RecommendedTrackCellViewModel]) so we can use it in this controller
                     self?.viewModels = model.tracks.items.compactMap({
                         RecommendedTrackCellViewModel(name: $0.track.name,
@@ -147,7 +151,10 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        //Play song
+        //When the user clicks on a certain song in the playlist, the app will present a modal with the player
+        let index = indexPath.row
+        let track = tracks[index]
+        PlaybackPresenter.shared.startPlayback(from: self, track: track)
     }
     
 }
@@ -156,7 +163,7 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
 
 extension PlaylistViewController: PlaylistHeaderCollectionReusableViewDelegate {
     func playlistHeaderCollectionReusableViewDidTapPlayAll(_ header: PlaylistHeaderCollectionReusableView) {
-        //Start playlist play in queue
-        print("PlayAll")
+        //When the user clicks the circular green play button, a modal will be presented with the player
+        PlaybackPresenter.shared.startPlayback(from: self, tracks: tracks)
     }
 }

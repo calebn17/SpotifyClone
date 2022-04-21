@@ -9,7 +9,11 @@ import UIKit
 
 class AlbumViewController: UIViewController {
     
+    //Album here only has info about the album but not the audio tracks
     private let album: Album
+    
+    //Storing the individual track of the album here
+    private var tracks = [AudioTrack]()
     
     //Going to be storing the cell view models here
     private var viewModels = [AlbumCollectionViewCellViewModel]()
@@ -79,6 +83,8 @@ class AlbumViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
+                    //Storing the tracks in the album into the tracks array
+                    self?.tracks = model.tracks.items
                     //Taking the model(AlbumDetailsResponse) and mapping it to the AlbumCollectionViewCellViewModel so we can use it in this controller
                     self?.viewModels = model.tracks.items.compactMap({
                         AlbumCollectionViewCellViewModel(name: $0.name,
@@ -122,7 +128,7 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
             return UICollectionReusableView()
         }
         
-        //Using the Album object that was passed into this VC and mapping it into a PlaylistHeaderViewViewModel so we can configure it
+        //Using the Album object that was passed into this VC and mapping it into a PlaylistHeaderViewViewModel so we can configure it to display
         let headerViewModel = PlaylistHeaderViewViewModel(
             name: album.name,
             ownerName: album.artists.first?.name,
@@ -141,6 +147,10 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
         collectionView.deselectItem(at: indexPath, animated: true)
         
         //Play song
+        //Pulls out the individual track that the user clicked on
+        let track = tracks[indexPath.row]
+        //Passes the track back to the PlaybackPresenter which will push a modal with the player
+        PlaybackPresenter.shared.startPlayback(from: self, track: track)
     }
     
 }
@@ -150,8 +160,8 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
 //Reusing the PlaylistHeaderCollectionReusableViewDelegate
 extension AlbumViewController: PlaylistHeaderCollectionReusableViewDelegate {
     func playlistHeaderCollectionReusableViewDidTapPlayAll(_ header: PlaylistHeaderCollectionReusableView) {
-        //Start playlist play in queue
-        print("PlayAll")
+        //When the user clicks the circular green play button, a modal will be presented with the player
+        PlaybackPresenter.shared.startPlayback(from: self, tracks: tracks)
     }
 }
 

@@ -266,7 +266,7 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
         }
     }
     
-    //When the user taps on an item (depending on the section) they will be directed the section's page
+    //When the user taps on an item (depending on the section) they will be directed to the section's page
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         let section = sections[indexPath.section]
@@ -277,19 +277,18 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             vc.title = playlist.name
             vc.navigationItem.largeTitleDisplayMode = .never
             navigationController?.pushViewController(vc, animated: true)
+            
         case .newReleases:
             let album = newAlbums[indexPath.row]
             let vc = AlbumViewController(album: album)
             vc.title = album.name
             vc.navigationItem.largeTitleDisplayMode = .never
             navigationController?.pushViewController(vc, animated: true)
-        case .recommendedTracks:
-            let track = tracks[indexPath.row]
-            let vc = RecommendedTracksViewController(track: track)
-            vc.title = track.name
-            vc.navigationItem.largeTitleDisplayMode = .never
-            navigationController?.pushViewController(vc, animated: true)
             
+        case .recommendedTracks:
+            //When a user clicks on a specific track, the player modal will be presented
+            let track = tracks[indexPath.row]
+            PlaybackPresenter.shared.startPlayback(from: self, track: track)
         }
     }
     
@@ -308,6 +307,8 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
                                                                             alignment: .top)
         let supplementaryViews = [supplementaryItem]
         switch section {
+        
+        //New Released Albums
         case 0:
             //Item
             let item = NSCollectionLayoutItem(
@@ -330,6 +331,8 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             section.orthogonalScrollingBehavior = .groupPaging
             section.boundarySupplementaryItems = supplementaryViews
             return section
+        
+        //Featured Playlists
         case 1:
             let item = NSCollectionLayoutItem(
                 layoutSize: NSCollectionLayoutSize(widthDimension: .absolute(200), heightDimension: .absolute(200)))
@@ -349,6 +352,8 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             section.orthogonalScrollingBehavior = .continuous
             section.boundarySupplementaryItems = supplementaryViews
             return section
+        
+        //Recommended Tracks
         case 2:
             let item = NSCollectionLayoutItem(
                 layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
@@ -362,6 +367,7 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             let section = NSCollectionLayoutSection(group: verticalGroup)
             section.boundarySupplementaryItems = supplementaryViews
             return section
+        
         default:
             let item = NSCollectionLayoutItem(
                 layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))

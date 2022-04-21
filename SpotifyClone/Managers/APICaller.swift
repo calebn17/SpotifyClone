@@ -9,9 +9,10 @@ import Foundation
 
 final class APICaller {
     
+    //Creating a Singleton
     static let shared = APICaller()
-    
     private init() {}
+    //
     
     struct Constants {
         static let baseAPIURL = "https://api.spotify.com/v1"

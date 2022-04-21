@@ -46,6 +46,8 @@ class TabBarViewController: UITabBarController {
                 
         //Setting the 3 vcs into the tab bar
         setViewControllers([nav1, nav2, nav3], animated: false)
+        
+        UITabBar.appearance().barTintColor = .systemBackground
     }
     
 
