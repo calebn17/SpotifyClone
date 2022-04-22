@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import AVFoundation
 
 protocol PlayerDataSource: AnyObject {
     //Need {get} because the datasource is returning variables
@@ -39,9 +40,18 @@ final class PlaybackPresenter {
         return nil
     }
     
+    var player: AVPlayer?
+    var playerQueue: AVQueuePlayer?
+    
     //These functions will present the modal that will hold the song player
     
     func startPlayback(from viewController: UIViewController, track: AudioTrack) {
+        //Making sure there is a preview to play
+        guard let url = URL(string: track.preview_url ?? "") else {return}
+            
+        player = AVPlayer(url: url)
+        player?.volume = 0.1
+        
         //since there should only be one audio track that is sent back in the method, store it in self.track
         //make the tracks collection (array) empty. * Empty array -> = [], and not -> = nil *
         self.track = track
@@ -50,8 +60,12 @@ final class PlaybackPresenter {
         vc.title = track.name
         //setting the vc's datasource as this class (PlaybackPresenter)
         vc.dataSource = self
+        vc.delegate = self
         //The viewController that calls this function will present a modal of the player
-        viewController.present(UINavigationController(rootViewController: vc), animated: true, completion: nil)
+        //Using a trailing closure to implement the completion handler which will play the preview track in the player
+        viewController.present(UINavigationController(rootViewController: vc), animated: true){[weak self] in
+            self?.player?.play()
+        }
     }
     
     //Will handle Playlists which are just a collection of tracks
@@ -60,6 +74,13 @@ final class PlaybackPresenter {
         //make self.track nil
         self.tracks = tracks
         self.track = nil
+        
+        let items: [AVPlayerItem] = tracks.compactMap({
+            guard let url = URL(string: $0.preview_url ?? "") else {return nil}
+            return AVPlayerItem(url: url)
+        })
+        self.playerQueue = AVQueuePlayer(items: items)
+        
         let vc = PlayerViewController()
         vc.dataSource = self
         viewController.present(UINavigationController(rootViewController: vc), animated: true, completion: nil)
@@ -79,6 +100,43 @@ final class PlaybackPresenter {
     
     
     
+}
+
+extension PlaybackPresenter: PlayerViewControllerDelegate {
+    func didTapPlayPause() {
+        if let player = player {
+            if player.timeControlStatus == .playing {
+                player.pause()
+            }
+            else if player.timeControlStatus == .paused {
+                player.play()
+            }
+        }
+    }
+    
+    func didTapForward() {
+        if tracks.isEmpty {
+            //Not a playlist or album
+            player?.pause()
+        }
+        else {
+            
+        }
+    }
+    
+    func didTapBackward() {
+        if tracks.isEmpty {
+            //Not a playlist or album
+            player?.play()
+        }
+        else {
+            
+        }
+    }
+    
+    func didSlideSlider(_ value: Float) {
+        player?.volume = value
+    }
 }
 
 //The Data that this class (as the DataSource) is sending back

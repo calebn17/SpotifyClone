@@ -8,11 +8,19 @@
 import UIKit
 import SDWebImage
 
+protocol PlayerViewControllerDelegate: AnyObject {
+    func didTapPlayPause()
+    func didTapForward()
+    func didTapBackward()
+    func didSlideSlider(_ value: Float)
+}
+
 class PlayerViewController: UIViewController {
     
     private let controlsView = PlayerControlsView()
     
     weak var dataSource: PlayerDataSource?
+    weak var delegate: PlayerViewControllerDelegate?
 
     //Creating the image view for the album artwork, etc
     private let imageView: UIImageView = {
@@ -69,15 +77,19 @@ class PlayerViewController: UIViewController {
 
 extension PlayerViewController: PlayerControlsViewDelegate {
     func playerControlsViewDidTapPlayPauseButton(_ playerControlsView: PlayerControlsView) {
-        //
+        delegate?.didTapPlayPause()
     }
     
     func playerControlsViewDidTapFowardButton(_ playerControlsView: PlayerControlsView) {
-        //
+        delegate?.didTapForward()
     }
     
     func playerControlsViewDidTapBackwardsButton(_ playerControlsView: PlayerControlsView) {
-        //
+        delegate?.didTapBackward()
+    }
+    
+    func playerControlsView(_ playerControlsView: PlayerControlsView, didSlideSlider value: Float) {
+        delegate?.didSlideSlider(value)
     }
     
     
