@@ -150,7 +150,8 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
         //Pulls out the individual track that the user clicked on
         let track = tracks[indexPath.row]
         //Passes the track back to the PlaybackPresenter which will push a modal with the player
-        PlaybackPresenter.shared.startPlayback(from: self, track: track)
+        PlaybackPresenter.shared.startPlayback(from: self, track: track, tracks: nil, album: album)
+        print("The AlbumViewController is sending this image back to the PlaybackPresenter: \(track.album?.images.first?.url ?? "no image url")")
     }
     
 }
@@ -161,7 +162,8 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
 extension AlbumViewController: PlaylistHeaderCollectionReusableViewDelegate {
     func playlistHeaderCollectionReusableViewDidTapPlayAll(_ header: PlaylistHeaderCollectionReusableView) {
         //When the user clicks the circular green play button, a modal will be presented with the player
-        PlaybackPresenter.shared.startPlayback(from: self, tracks: tracks)
+        PlaybackPresenter.shared.startPlayback(from: self, track: nil, tracks: tracks, album: self.album)
+        print("The AlbumViewController is sending this image back to the PlaybackPresenter: \(album.images.first?.url ?? "no image url")")
     }
 }
 

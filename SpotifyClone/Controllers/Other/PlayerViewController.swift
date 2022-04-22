@@ -28,6 +28,8 @@ class PlayerViewController: UIViewController {
         view.addSubview(controlsView)
         controlsView.delegate = self
         configureBarButtons()
+        
+        //Configure this Controller using the datasource (PlaybackPresenter)
         configure()
     }
     
@@ -38,8 +40,14 @@ class PlayerViewController: UIViewController {
     }
     
     private func configure() {
-        imageView.sd_setImage(with: dataSource?.imageURL, completed: nil)
+        //using the PlabackPresenter as the dataSource to get the image, song name, and subtitle
+        if dataSource?.imageURL != nil {
+            imageView.sd_setImage(with: dataSource?.imageURL, completed: nil)
+        } else {
+            imageView.sd_setImage(with: dataSource?.albumImageURL, completed: nil)
+        }
         controlsView.configure(with: PlayerControlsViewViewModel(title: dataSource?.songName, subtitle: dataSource?.subtitle))
+        //print("This is what the PlayerViewController is getting for images: \(dataSource?.imageURL ?? "no image url")")
     }
     
     private func configureBarButtons() {
