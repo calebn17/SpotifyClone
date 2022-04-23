@@ -71,6 +71,38 @@ final class APICaller {
         }
     }
     
+    public func getCurrentUserPlaylists(completion: @escaping (Result<[Playlist], Error>) -> Void) {
+        createRequest(with: URL(string: Constants.baseAPIURL + "/me/playlists/?limit=50"), type: .GET) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                do {
+                    let result = try JSONDecoder().decode(LibraryPlaylistsResponse.self, from: data)
+                    //passing the result data as a Success value into the completion handler. Makes it easier to verfiy that API call worked.
+                    //setting value of completion handler to result.items because we want an [Playlists]
+                    completion(.success(result.items))
+                }
+                catch {
+                    //passing the error to the completion handler
+                    completion(.failure(error))
+                }
+            }
+            task.resume()
+            
+        }
+    }
+    public func createPlaylists(with name: String, completion: @escaping (Bool) -> Void) {
+        
+    }
+    public func addTrackToPlaylists(track: AudioTrack, playlist: Playlist, completion: @escaping (Bool) -> Void) {
+        
+    }
+    public func removeTrackFromPlaylists(track: AudioTrack, playlist: Playlist, completion: @escaping (Bool) -> Void) {
+        
+    }
+    
     
 //MARK: - Profile
     
