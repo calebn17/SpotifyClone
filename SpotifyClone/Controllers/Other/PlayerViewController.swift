@@ -25,7 +25,7 @@ class PlayerViewController: UIViewController {
     //Creating the image view for the album artwork, etc
     private let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .systemBlue
+        imageView.backgroundColor = .clear
         return imageView
     }()
     
@@ -71,13 +71,19 @@ class PlayerViewController: UIViewController {
     @objc private func didTapAction() {
         // Actions
     }
+    
+    func refreshUI() {
+        configure()
+    }
 
 
 }
 
 extension PlayerViewController: PlayerControlsViewDelegate {
     func playerControlsViewDidTapPlayPauseButton(_ playerControlsView: PlayerControlsView) {
+        print("PlayerViewController Play/Pause")
         delegate?.didTapPlayPause()
+        print("PlayerViewController2 Play/Pause")
     }
     
     func playerControlsViewDidTapFowardButton(_ playerControlsView: PlayerControlsView) {

@@ -150,7 +150,7 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
         //Pulls out the individual track that the user clicked on
         let track = tracks[indexPath.row]
         //Passes the track back to the PlaybackPresenter which will push a modal with the player
-        PlaybackPresenter.shared.startPlayback(from: self, track: track, tracks: nil, album: album)
+        PlaybackPresenter.shared.startPlayback(from: self, track: track, tracks: tracks, album: album)
         print("The AlbumViewController is sending this image back to the PlaybackPresenter: \(track.album?.images.first?.url ?? "no image url")")
     }
     

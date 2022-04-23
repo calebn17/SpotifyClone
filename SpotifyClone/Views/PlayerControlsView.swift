@@ -115,6 +115,7 @@ final class PlayerControlsView: UIView {
     @objc private func didTapPlayPause() {
         //when the button is tapped the isPlaying value will flip
         self.isPlaying = !isPlaying
+        print("PlayerControlsView Play or Pause")
         delegate?.playerControlsViewDidTapPlayPauseButton(self)
         
         //updating the icon
