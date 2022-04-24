@@ -109,8 +109,11 @@ final class APICaller {
                         guard let data = data, error == nil else {completion(false); return}
                         
                         do {
-                            let result = try JSONDecoder().decode(LibraryPlaylistsResponse.self, from: data)
-                            completion(true)
+                            let result = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                            if let response = result as? [String: Any], response["id"] as? String != nil {
+                                print("Playlist Created!")
+                                completion(true)
+                            }
                         }
                         catch {
                             //passing the error to the completion handler

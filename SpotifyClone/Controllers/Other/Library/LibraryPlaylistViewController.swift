@@ -13,9 +13,19 @@ class LibraryPlaylistViewController: UIViewController {
     
     private let noPlaylistsView = ActionLabelView()
     
+    private let tableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .grouped)
+        tableView.register(SearchResultSubtitleTableViewCell.self, forCellReuseIdentifier: SearchResultSubtitleTableViewCell.identifier)
+        tableView.isHidden = true
+        return tableView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        tableView.dataSource = self
+        tableView.delegate = self
+        view.addSubview(tableView)
         setUpNoPlaylistsView()
         fetchCurrentPlaylists()
     }
@@ -24,6 +34,7 @@ class LibraryPlaylistViewController: UIViewController {
         super.viewDidLayoutSubviews()
         noPlaylistsView.frame = CGRect(x: 0, y: 0, width: 150, height: 150)
         noPlaylistsView.center = view.center
+        tableView.frame = view.bounds
        
     }
     
@@ -54,12 +65,13 @@ class LibraryPlaylistViewController: UIViewController {
         }
         else {
             //Show table
+            tableView.reloadData()
+            tableView.isHidden = false
+            noPlaylistsView.isHidden = true
         }
     }
-}
-
-extension LibraryPlaylistViewController: ActionLabelViewDelegate {
-    func actionLabelViewDidTapButton(_ actionView: ActionLabelView) {
+    
+    public func showCreatePlaylistAlert() {
         //Show Creation UI
         let alert = UIAlertController(title: "New Playlists", message: "Enter playlist name", preferredStyle: .alert)
         alert.addTextField { textField in
@@ -73,14 +85,53 @@ extension LibraryPlaylistViewController: ActionLabelViewDelegate {
                   !text.trimmingCharacters(in: .whitespaces).isEmpty else {
                       return
                   }
-            APICaller.shared.createPlaylists(with: text) { success in
+            APICaller.shared.createPlaylists(with: text) { [weak self] success in
                 if success {
                     //Refresh list of playlists
+                    self?.fetchCurrentPlaylists()
                 }
                 else {
                     print("Failed to create playlist")
                 }
             }
         }))
+        present(alert, animated: true)
+    }
+}
+
+extension LibraryPlaylistViewController: ActionLabelViewDelegate {
+    func actionLabelViewDidTapButton(_ actionView: ActionLabelView) {
+        showCreatePlaylistAlert()
+    }
+}
+
+extension LibraryPlaylistViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return playlists.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchResultSubtitleTableViewCell.identifier, for: indexPath) as? SearchResultSubtitleTableViewCell else {
+            return UITableViewCell()
+        }
+        let playlist = playlists[indexPath.row]
+        cell.configure(with: SearchResultSubtitleTableViewCellViewModel(
+                                title: playlist.name,
+                                subtitle: playlist.owner.display_name,
+                                imageURL: URL(string: playlist.images.first?.url ?? "")))
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let playlist = playlists[indexPath.row]
+        let vc = PlaylistViewController(playlist: playlist)
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 65
     }
 }
