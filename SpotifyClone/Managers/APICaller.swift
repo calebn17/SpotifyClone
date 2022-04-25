@@ -94,22 +94,26 @@ final class APICaller {
         }
     }
     public func createPlaylists(with name: String, completion: @escaping (Bool) -> Void) {
+        //Need to get the user's id first to then get their playlists
         getCurrentUserProfile { [weak self] result in
             switch result {
             case .success(let profile):
                 let urlString = Constants.baseAPIURL + "/users/\(profile.id)/playlists"
                 
                 self?.createRequest(with: URL(string: urlString), type: .POST){ baseRequest in
-                    
+                    //creating a mutable copy of baseRequest as "request"
                     var request = baseRequest
                     let json = ["name": name]
+                    //adding "json" to the body of the request. dictated by the api
                     request.httpBody = try? JSONSerialization.data(withJSONObject: json, options: .fragmentsAllowed)
                     
                     let task = URLSession.shared.dataTask(with: request) { data, _, error in
                         guard let data = data, error == nil else {completion(false); return}
                         
                         do {
+                            //converts the result in to a json. dont need to decode because we only need to know if it worked or not (dont need data from this call)
                             let result = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                            //checking to see if the response/result is a generic dictionary and if the key "id" has a non-nil value
                             if let response = result as? [String: Any], response["id"] as? String != nil {
                                 print("Playlist Created!")
                                 completion(true)
@@ -129,10 +133,62 @@ final class APICaller {
         }
     }
     public func addTrackToPlaylists(track: AudioTrack, playlist: Playlist, completion: @escaping (Bool) -> Void) {
-        
+        createRequest(with: URL(string: Constants.baseAPIURL + "/playlists/\(playlist.id)/tracks"), type: .POST) { baseRequest in
+            var request = baseRequest
+            let json = ["uris": ["spotify:track:\(track.id)"]]
+            request.httpBody = try? JSONSerialization.data(withJSONObject: json, options: .fragmentsAllowed)
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {completion(false); return}
+                do {
+                    let result = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
+                    if let response = result as? [String: Any], response["snapshot_id"] as? String != nil {
+                        completion(true)
+                    }
+                    else {
+                        completion(false)
+                    }
+                }
+                catch {
+                    completion(false)
+                    
+                }
+            }
+            task.resume()
+        }
     }
     public func removeTrackFromPlaylists(track: AudioTrack, playlist: Playlist, completion: @escaping (Bool) -> Void) {
-        
+        createRequest(with: URL(string: Constants.baseAPIURL + "/playlists/\(playlist.id)/tracks"), type: .DELETE) { baseRequest in
+            var request = baseRequest
+            let json = [
+                "tracks": [
+                    [
+                        "uri": "spotify:track:\(track.id)"
+                    ]
+                ]
+            ]
+            request.httpBody = try? JSONSerialization.data(withJSONObject: json, options: .fragmentsAllowed)
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {completion(false); return}
+                do {
+                    let result = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
+                    if let response = result as? [String: Any], response["snapshot_id"] as? String != nil {
+                        completion(true)
+                    }
+                    else {
+                        completion(false)
+                    }
+                }
+                catch {
+                    completion(false)
+                    
+                }
+            }
+            task.resume()
+        }
     }
     
     
@@ -320,6 +376,7 @@ final class APICaller {
     enum HTTPMethod: String {
         case GET
         case POST
+        case DELETE
     }
     
     ///Reusable function for making API requests. Returns a URL Request

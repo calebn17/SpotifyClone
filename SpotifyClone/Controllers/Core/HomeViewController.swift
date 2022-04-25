@@ -69,11 +69,53 @@ class HomeViewController: UIViewController {
         view.addSubview(spinner)
         //API calls
         fetchData()
+        
+        //Configure for Long tap to add a selected track to a saved playlist
+        addLongTapGesture()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         collectionView.frame = view.bounds
+    }
+    
+    private func addLongTapGesture() {
+        //creates the gesture
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(_:)))
+        collectionView.isUserInteractionEnabled = true
+        collectionView.addGestureRecognizer(gesture)
+    }
+    
+    @objc func didLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else {return}
+        //CGFloat of the position
+        let touchPoint = gesture.location(in: collectionView)
+        //returns the indexPath of the collectionView where the user performed the gesture
+        //makes sure that the gesture is only valid in the recommended tracks section (indexPath.section is 2)
+        guard let indexPath = collectionView.indexPathForItem(at: touchPoint), indexPath.section == 2 else {return}
+        //pulls out the track that was selected and stores it in "model"
+        let model = tracks[indexPath.row]
+        //creates the action sheet that will be presented to the user when they long tap a track
+        let actionSheet = UIAlertController(title: model.name, message: "Would you like to add this track to a playlist?", preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        //when the user taps the add button, then the code block in the handler kicks off
+        actionSheet.addAction(UIAlertAction(title: "Add to Playlist", style: .default, handler: {[weak self] _ in
+            //Need this on the main thread because it's an action in a closure
+            DispatchQueue.main.async {
+                let vc = LibraryPlaylistViewController()
+                //there is a defined sectionHandler in the LibraryPlaylistViewController
+                //the code in the sectionHandler won't execute until the section Handler in the LibraryPlaylistViewController passes back "playlist"
+                vc.selectionHandler = { playlist in
+                    APICaller.shared.addTrackToPlaylists(track: model, playlist: playlist) { success in
+                        print("Added to playlist success: \(success)")
+                    }
+                }
+                vc.title = "Select Playlist"
+                //presents a modal view of the LibraryPlaylistViewController where the user will select a playlist
+                self?.present(UINavigationController(rootViewController: vc), animated: true, completion: nil)
+            }
+        }))
+        present(actionSheet, animated: true)
     }
     
     private func configureCollectionView() {

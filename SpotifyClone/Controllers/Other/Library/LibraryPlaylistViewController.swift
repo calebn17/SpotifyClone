@@ -11,6 +11,11 @@ class LibraryPlaylistViewController: UIViewController {
 
     var playlists: [Playlist] = []
     
+    
+    //section handler that uses a "Playlist"
+    //for adding a track to a custom playlist
+    public var selectionHandler: ((Playlist) -> Void)?
+    
     private let noPlaylistsView = ActionLabelView()
     
     private let tableView: UITableView = {
@@ -28,6 +33,14 @@ class LibraryPlaylistViewController: UIViewController {
         view.addSubview(tableView)
         setUpNoPlaylistsView()
         fetchCurrentPlaylists()
+        
+        if selectionHandler != nil {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(didTapClose))
+        }
+    }
+    
+    @objc func didTapClose() {
+        dismiss(animated: true, completion: nil)
     }
     
     override func viewDidLayoutSubviews() {
@@ -125,9 +138,21 @@ extension LibraryPlaylistViewController: UITableViewDelegate, UITableViewDataSou
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
         let playlist = playlists[indexPath.row]
+        
+        //if there is a selectionHandler that is being called by the HomeVC (for the longtap)
+        //then dont select that playlist/row but instead send back the handler with the playlist
+        guard selectionHandler == nil else {
+            //passes the selected playlist to the selectionHandler which will then make a api POST
+            selectionHandler?(playlist)
+            dismiss(animated: true, completion: nil)
+            return
+        }
+        
         let vc = PlaylistViewController(playlist: playlist)
         vc.navigationItem.largeTitleDisplayMode = .never
+        vc.isOwner = true
         navigationController?.pushViewController(vc, animated: true)
     }
     
