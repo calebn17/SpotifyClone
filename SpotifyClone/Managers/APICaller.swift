@@ -32,9 +32,10 @@ final class APICaller {
                     return
                 }
                 do {
-                    let result = try JSONDecoder().decode(AlbumDetailsResponse.self, from: data)
                     //passing the result data as a Success value into the completion handler. Makes it easier to verfiy that API call worked.
+                    let result = try JSONDecoder().decode(AlbumDetailsResponse.self, from: data)
                     completion(.success(result))
+                    print(result)
                     
                 }
                 catch {
@@ -47,6 +48,46 @@ final class APICaller {
         }
     }
     
+    public func getCurrentUserAlbums(completion: @escaping (Result<LibraryAlbumsResponse, Error>) -> Void) {
+        createRequest(with: URL(string: Constants.baseAPIURL + "/me/albums?limit=20"), type: .GET) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                do {
+                    //let result = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
+                    let result = try JSONDecoder().decode(LibraryAlbumsResponse.self, from: data)
+                    //passing the result data as a Success value into the completion handler. Makes it easier to verfiy that API call worked.
+                    completion(.success(result))
+                    
+                }
+                catch {
+                    //passing the error to the completion handler
+                    completion(.failure(error))
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    public func addAlbumToLibrary(album: Album, completion: @escaping (Bool) -> Void){
+        createRequest(with: URL(string: Constants.baseAPIURL + "/me/albums?ids=\(album.id)"), type: .PUT) { baseRequest in
+            
+            var request = baseRequest
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                guard let code = (response as? HTTPURLResponse)?.statusCode, error == nil else {
+                    completion(false)
+                    return
+                }
+                    completion(code == 200)
+                    print(code)
+            }
+            task.resume()
+        }
+    }
 //MARK: - Playlists
     
     public func getPlaylistDetails(for playlist: Playlist, completion: @escaping (Result<PlaylistDetailsResponse, Error>) -> Void) {
@@ -377,6 +418,7 @@ final class APICaller {
         case GET
         case POST
         case DELETE
+        case PUT
     }
     
     ///Reusable function for making API requests. Returns a URL Request
@@ -389,6 +431,7 @@ final class APICaller {
             
             var request = URLRequest(url: apiURL)
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            print(token)
             request.httpMethod = type.rawValue
             request.timeoutInterval = 30
             completion(request)

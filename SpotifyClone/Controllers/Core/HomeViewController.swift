@@ -104,7 +104,7 @@ class HomeViewController: UIViewController {
             DispatchQueue.main.async {
                 let vc = LibraryPlaylistViewController()
                 //there is a defined sectionHandler in the LibraryPlaylistViewController
-                //the code in the sectionHandler won't execute until the section Handler in the LibraryPlaylistViewController passes back "playlist"
+                //the code in the sectionHandler(a completion handler) won't execute until the section Handler in the LibraryPlaylistViewController passes back "playlist"
                 vc.selectionHandler = { playlist in
                     APICaller.shared.addTrackToPlaylists(track: model, playlist: playlist) { success in
                         print("Added to playlist success: \(success)")
@@ -310,7 +310,9 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
     
     //When the user taps on an item (depending on the section) they will be directed to the section's page
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
         collectionView.deselectItem(at: indexPath, animated: true)
+        HapticsManager.shared.vibrateForSelection()
         let section = sections[indexPath.section]
         switch section {
         case .featuredPlaylists:

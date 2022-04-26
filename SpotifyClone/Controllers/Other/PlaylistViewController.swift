@@ -73,8 +73,8 @@ class PlaylistViewController: UIViewController{
         //Adding a share button in the navigation bar
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didTapShare))
         
-        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(_:)))
-        collectionView.addGestureRecognizer(gesture)
+        //To remove tracks from saved Playlist
+        addLongTapGesture()
     }
     
     override func viewDidLayoutSubviews() {
@@ -85,6 +85,12 @@ class PlaylistViewController: UIViewController{
 
 //MARK: - Action Methods
     
+    private func addLongTapGesture() {
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(_:)))
+        collectionView.addGestureRecognizer(gesture)
+    }
+    
+    //To Remove tracks from custom Playlist
     @objc func didLongPress(_ gesture: UILongPressGestureRecognizer) {
         guard gesture.state == .began else { return }
         let touchPoint = gesture.location(in: collectionView)
@@ -94,6 +100,7 @@ class PlaylistViewController: UIViewController{
         let actionSheet = UIAlertController(title: trackToDelete.name, message: "Would you like to remove this from the playlist?", preferredStyle: .actionSheet)
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         actionSheet.addAction(UIAlertAction(title: "Remove", style: .destructive, handler: { [weak self] _ in
+            //need a strongly held self so unwrapping it here
             guard let strongSelf = self else {return}
             APICaller.shared.removeTrackFromPlaylists(track: trackToDelete, playlist: strongSelf.playlist) { success in
                 if success {

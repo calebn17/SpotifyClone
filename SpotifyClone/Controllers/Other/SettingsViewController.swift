@@ -47,7 +47,26 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     private func signOutTapped() {
-        
+        let alert = UIAlertController(title: "Sign Out", message: "Are you sure?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Sign Out", style: .destructive, handler: { _ in
+            AuthManager.shared.signOut {[weak self] signedOut in
+                if signedOut {
+                    DispatchQueue.main.async {
+                        
+                        let navVC = UINavigationController(rootViewController: WelcomeViewController())
+                        navVC.navigationBar.prefersLargeTitles = true
+                        navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
+                        navVC.modalPresentationStyle = .fullScreen
+                        self?.present(navVC, animated: true, completion: {
+                            //reset the vc behind the welcome vc to the root vc (the home page) so when the user logins again, they will see the home page instead of the settings page
+                            self?.navigationController?.popToRootViewController(animated: false)
+                        } )
+                    }
+                }
+            }
+        }))
+        present(alert, animated: true)
     }
     
     private func viewProfile() {
