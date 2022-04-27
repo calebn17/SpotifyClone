@@ -47,6 +47,7 @@ class AuthViewController: UIViewController, WKNavigationDelegate {
 
 //MARK: - Webview methods
     
+    //When user successfully authenticates in the webview
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         guard let url = webView.url else {return}
         

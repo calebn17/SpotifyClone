@@ -16,8 +16,39 @@ class WelcomeViewController: UIViewController {
         let button = UIButton()
         button.backgroundColor = .white
         button.setTitle("Sign In with Spotify", for: .normal)
-        button.setTitleColor(.blue, for: .normal)
+        button.setTitleColor(.black, for: .normal)
         return button
+    }()
+    
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(named: "albums_background")
+        return imageView
+    }()
+    
+    private let overlayView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        view.alpha = 0.7
+        return view
+    }()
+    
+    private let logoImageview: UIImageView = {
+        //can actually set the image and initialize the imageView like this
+        let imageView = UIImageView(image: UIImage(named: "logo"))
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private let label: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.textColor = .white
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 32, weight: .semibold)
+        label.text = "Listen to Millions\n of Songs on\n the Go."
+        return label
     }()
 
 //MARK: - View Loading Methods
@@ -27,16 +58,25 @@ class WelcomeViewController: UIViewController {
 
         title = "Spotify"
         view.backgroundColor = .systemGreen
+        //add before button so button will appear on top of the image
+        view.addSubview(imageView)
+        
+        view.addSubview(overlayView)
         
         //adding sign in button as a subview in the welcome vc
         view.addSubview(signInButton)
         //adding an action to the sign in button
         signInButton.addTarget(self, action: #selector(didTapSignIn), for: .touchUpInside)
+        
+        view.addSubview(logoImageview)
+        view.addSubview(label)
     }
     
     //Is called right when the subviews load
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        imageView.frame = view.bounds
+        overlayView.frame = view.bounds
         //setting the bounds of the sign in button
         signInButton.frame = CGRect(
             x: 20,
@@ -44,6 +84,8 @@ class WelcomeViewController: UIViewController {
             width: view.width - 40,
             height: 50
         )
+        logoImageview.frame = CGRect(x: (view.width - 180)/2, y: (view.height - 350)/2, width: 200, height: 200)
+        label.frame = CGRect(x: 30, y: logoImageview.bottom + 30, width: view.width - 60, height: 150)
     }
 
 //MARK: - Sign in Methods

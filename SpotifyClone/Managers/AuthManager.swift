@@ -11,9 +11,12 @@ final class AuthManager {
 
 //MARK: - Setup
     
-    //creating a shared instance of AuthManager so we dont have to create a new one all the time
+    //creating a shared instance of AuthManager so we dont have to create a new one all the time (a singleton)
     static let shared = AuthManager()
+    //need this private init to complete writing the singleton. Basically disallows any other class to init the AuthManager
+    private init() {}
     
+    //is the app currently refreshing the token
     private var refreshingToken = false
     
     struct Constants {
@@ -24,7 +27,7 @@ final class AuthManager {
         static let scopes = "user-read-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-private%20user-follow-read%20user-library-modify%20user-library-read%20user-read-email"
     }
     
-    private init() {}
+    
     
     //creating the URL for signing in
     public var signInURL: URL? {
@@ -70,6 +73,7 @@ final class AuthManager {
     //Called in the AuthViewController
     public func exchangeCodeForToken(code: String, completion: @escaping ((Bool) -> Void)) {
         //Get Token
+        //the url that will be in the request
         guard let url = URL(string: Constants.tokenAPIURL) else {return}
         
         //sets the url query parameters needed to get the token
@@ -86,7 +90,7 @@ final class AuthManager {
         request.httpMethod = "POST"
         //required by Spotify APIs
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        //creating the token and encoding it using base 64
+        //creating the basic token (not the Auth token that we are trying to get in this function) and encoding it using base 64
         let basicToken = Constants.clientID + ":" + Constants.clientSecret
         let data = basicToken.data(using: .utf8)
         guard let base64String = data?.base64EncodedString() else {
